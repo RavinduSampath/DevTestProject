@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customers;
 use Illuminate\Http\Request;
+use App\Services\BillCalculator;
 
 class CustomersController extends Controller
 {
@@ -12,7 +13,7 @@ class CustomersController extends Controller
      */
     public function index()
     {
-        //
+        return view('pages.customers.index');
     }
 
     /**
@@ -36,7 +37,7 @@ class CustomersController extends Controller
      */
     public function show(Customers $customers)
     {
-        //
+        // return view('pages.customers.details', compact('customer'));
     }
 
     /**
@@ -61,5 +62,26 @@ class CustomersController extends Controller
     public function destroy(Customers $customers)
     {
         //
+    }
+
+    public function search(Request $request)
+    {
+        $customer = Customers::where('customer_account_number', $request->customer_account_number)->first();
+        if ($customer) {
+            return redirect()->route('pages.customers.details', $customer->customer_account_number);
+        } else {
+            return redirect()->back()->with('error', 'Account number not found.');
+        }
+    }
+
+    public function details($account_number)
+    {
+        $customer = Customers::where('customer_account_number', $account_number)
+            ->with('meterReadings')
+            ->firstOrFail();
+
+        $bill = app(BillCalculator::class)->calculateBill($account_number);
+
+        return view('pages.customers.details', compact('customer', 'bill'));
     }
 }
