@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('meter_readings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade'); // Foreign key to customers table also handles deletion
+            $table->string('customer_account_number'); // match the type used in customers table
             $table->integer('reading');
             $table->date('reading_date');
-            
+
+
+            $table->foreign('customer_account_number')
+                ->references('customer_account_number')
+                ->on('customers')
+                ->onDelete('cascade');
         });
     }
 

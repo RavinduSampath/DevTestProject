@@ -35,7 +35,7 @@ class CustomersController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Customers $customers)
+    public function show(Customers $customer)
     {
         // return view('pages.customers.details', compact('customer'));
     }
@@ -43,7 +43,7 @@ class CustomersController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Customers $customers)
+    public function edit(Customers $customer)
     {
         //
     }
@@ -51,7 +51,7 @@ class CustomersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customers $customers)
+    public function update(Request $request, Customers $customer)
     {
         //
     }
@@ -59,7 +59,7 @@ class CustomersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Customers $customers)
+    public function destroy(Customers $customer)
     {
         //
     }
