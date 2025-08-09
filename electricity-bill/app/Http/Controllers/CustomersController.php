@@ -5,11 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Customers;
 use Illuminate\Http\Request;
 use App\Services\BillCalculator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomersController extends Controller
 {
+    protected $billCalculator;
+
+    public function __construct(BillCalculator $billCalculator)
+    {
+        $this->billCalculator = $billCalculator;
+    }
+
     /**
-     * Display a listing of the resource.
+     * Display customer search page
      */
     public function index()
     {
@@ -17,71 +25,70 @@ class CustomersController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Search for customer by account number
      */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Customers $customer)
-    {
-        // return view('pages.customers.details', compact('customer'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Customers $customer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Customers $customer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customers $customer)
-    {
-        //
-    }
-
     public function search(Request $request)
     {
-        $customer = Customers::where('customer_account_number', $request->customer_account_number)->first();
-        if ($customer) {
+        $request->validate([
+            'customer_account_number' => 'required|string|max:20'
+        ]);
+
+        try {
+            $customer = Customers::where('customer_account_number', $request->customer_account_number)
+                ->firstOrFail();
+
             return redirect()->route('pages.customers.details', $customer->customer_account_number);
-        } else {
-            return redirect()->back()->with('error', 'Account number not found.');
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Account number not found.');
         }
     }
 
+
     public function details($account_number)
     {
-        $customer = Customers::where('customer_account_number', $account_number)
-            ->with('meterReadings')
-            ->firstOrFail();
+        try {
+            $customer = Customers::with(['meterReadings' => function ($query) {
+                $query->orderBy('reading_date', 'desc');
+            }])
+                ->where('customer_account_number', $account_number)
+                ->firstOrFail();
 
-        $bill = app(BillCalculator::class)->calculateBill($account_number);
+            $readings = $customer->meterReadings; // collection sorted desc
 
-        return view('pages.customers.details', compact('customer', 'bill'));
+            // always pass meterReadings so blade won't break
+            if ($readings->count() < 2) {
+                return view('pages.customers.details', [
+                    'customer' => $customer,
+                    'meterReadings' => $readings,
+                    'bill' => null,
+                    'warning' => 'Not enough meter readings to calculate bill (need at least 2 readings)'
+                ]);
+            }
+
+            // latest (index 0) is current, index 1 is previous (since sorted desc)
+            $currentReading  = $readings[0];
+            $previousReading = $readings[1];
+
+            // call the injected service
+            $bill = $this->billCalculator->calculateBill(
+                $previousReading->reading,
+                $currentReading->reading,
+                $previousReading->reading_date,
+                $currentReading->reading_date
+            );
+
+            return view('pages.customers.details', [
+                'customer' => $customer,
+                'meterReadings' => $readings,
+                'bill' => $bill,
+                'current_reading_obj' => $currentReading,
+                'previous_reading_obj' => $previousReading
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('customers.index')
+                ->with('error', 'Customer account not found.');
+        }
     }
 }

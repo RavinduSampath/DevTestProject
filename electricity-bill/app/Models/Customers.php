@@ -12,6 +12,6 @@ class Customers extends Model
     // Relationship: a customer has many meter readings
     public function meterReadings()
     {
-        return $this->hasMany(\App\Models\MeterReadings::class, 'customer_id');
+        return $this->hasMany(\App\Models\MeterReadings::class, 'customer_account_number', 'customer_account_number');
     }
 }
