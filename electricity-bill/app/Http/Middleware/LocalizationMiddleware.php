@@ -14,7 +14,7 @@ class LocalizationMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $locale = Session::get('locale', 'en'); // Default to 'en' if no locale is set
-        Session::put('locale', $locale); // Store the locale in the session
+        //Session::put('locale', $locale); // Store the locale in the session
         App::setLocale($locale); // Set the application locale
         return $next($request);
     }

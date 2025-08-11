@@ -8,16 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class BillCalculator
 {
-    /**
-     * Calculate bill according to spec.
-     *
-     * @param int|string $previousReading
-     * @param int|string $currentReading
-     * @param string|Carbon $previousDate  (older)
-     * @param string|Carbon $currentDate   (newer)
-     * @return array
-     * @throws InvalidArgumentException
-     */
+
     public function calculateBill($previousReading, $currentReading, $previousDate, $currentDate): array
     {
         // basic validation & casting

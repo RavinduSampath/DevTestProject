@@ -17,4 +17,4 @@ Route::get('/meter-reader', [MeterReadingsController::class, 'index'])->name('me
 Route::post('/meter-reader', [MeterReadingsController::class, 'store'])->name('meter-reader.store');
 
 // language switch
-Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('setLocale');;
+Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('setLocale');
