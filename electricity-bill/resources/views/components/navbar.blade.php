@@ -11,6 +11,16 @@
                     <a class="nav-link" href="{{ route('meter-reader.index') }}">Reader</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('customers.index') }}">Customer</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('setLocale', 'en') }}">English</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('setLocale', 'si') }}">සිංහල</a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link" href="#">Profile</a>
                 </li>
             </ul>

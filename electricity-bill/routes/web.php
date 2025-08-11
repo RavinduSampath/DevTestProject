@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MeterReadingsController;
 
 Route::get('/', [CustomersController::class, 'index'])
@@ -14,3 +15,6 @@ Route::get('/customers/{account_number}', [CustomersController::class, 'details'
 Route::get('/meter-reader', [MeterReadingsController::class, 'index'])->name('meter-reader.index');
 
 Route::post('/meter-reader', [MeterReadingsController::class, 'store'])->name('meter-reader.store');
+
+// language switch
+Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('setLocale');;
