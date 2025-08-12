@@ -20,17 +20,29 @@ It allows meter readers to enter readings, customers to view their bills, and su
    ```bash
     mysql -u root -p
     Your_mysql_password
-    CREATE DATABASE electricity_bill;
+    CREATE DATABASE ceb_billing_system;
     EXIT;
 ## 4. Copy .env.example to .env
     ## cp .env.example .env
 1. Open .env and update the database section:
+    ```bash
     DB_CONNECTION=mysql
     DB_HOST=127.0.0.1
     DB_PORT=3306
     DB_DATABASE=ceb_billing_system
     DB_USERNAME=root
     DB_PASSWORD=Your_mysql_password
-2. Install Dependencies
+
+```bash
+#1. Install Dependencies:
     composer install
     npm install
+
+#2. Generate Laravel app key:
+php artisan key:generate
+
+#3. Database tables(Migrations)
+php artisan migrate
+
+#4. Run the application
+php artisan serve
